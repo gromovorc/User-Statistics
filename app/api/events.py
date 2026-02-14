@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Annotated
 from uuid import UUID
 
@@ -15,10 +16,10 @@ events_router = APIRouter()
 
 SessionDep = Annotated[sa.Connection, Depends(get_connection)]
 
-def get_repo(conn: SessionDep) -> EventsRepository:
+def get_events_repo(conn: SessionDep) -> EventsRepository:
     return PostgresEventsRepo(conn)
 
-def get_service(repo: EventsRepository=Depends(get_repo)) -> EventsService:
+def get_events_service(repo: EventsRepository=Depends(get_events_repo)) -> EventsService:
     return EventsService(repo=repo)
 
 @events_router.post(
@@ -28,7 +29,7 @@ def get_service(repo: EventsRepository=Depends(get_repo)) -> EventsService:
 )
 def post_event(new_event: EventCreate,
                response: Response,
-               service: EventsService = Depends(get_service)
+               service: EventsService = Depends(get_events_service)
                ):
 
     event, status = service.create_event(new_event)
@@ -45,21 +46,25 @@ def post_event(new_event: EventCreate,
 
     return event
 
-
-############################################
-
-
-
 @events_router.get(
-    "/debug/db",
-    status_code=200
+    "/users/{user_id}/events",
+    response_model=list[EventRead],
+    status_code=200,
 )
-def get_event_by_id(conn: SessionDep, event_id:UUID):
-
-    query1 = sa.select(events_table).where(events_table.c.event_id == event_id)
-    result = conn.execute(query1)
-
-    row = result.mappings().first()
-
-    return dict(row) if row else {"found": False}
-
+def get_events(user_id:int,
+              date_from: datetime | None = None,
+              date_to: datetime | None = None,
+              limit: int = 50,
+              offset: int = 0,
+              event_type: str | None = None,
+              service: EventsService = Depends(get_events_service),
+              ) -> list[EventRead]:
+    try:
+        return service.get_events(user_id=user_id,
+                                  date_from=date_from,
+                                  date_to=date_to,
+                                  limit=limit,
+                                  offset=offset,
+                                  event_type=event_type)
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))

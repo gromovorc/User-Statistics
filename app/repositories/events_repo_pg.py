@@ -47,5 +47,18 @@ class PostgresEventsRepo:
         if existing:
             return dict(existing), 'duplicate'
 
-        #self._events_by_id[event_id] = {**event, "ingested_at": datetime.now(timezone.utc)}
-        #return self._events_by_id[event_id], "created"
+    def list_user_events(self, user_id, date_from, date_to, limit, offset, event_type=None) -> list[dict]:
+        select_stmt = sa.select(events_table).where(events_table.c.user_id == user_id)
+
+        if date_from:
+            select_stmt = select_stmt.where(events_table.c.event_time >= date_from)
+        if date_to:
+            select_stmt = select_stmt.where(events_table.c.event_time <= date_to)
+        if event_type:
+            select_stmt = select_stmt.where(events_table.c.event_type == event_type)
+
+        select_stmt = select_stmt.order_by(events_table.c.event_time.desc()).limit(limit).offset(offset)
+
+        rows = self._connection.execute(select_stmt).mappings().all()
+
+        return [dict(row) for row in rows]

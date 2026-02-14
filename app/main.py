@@ -3,9 +3,11 @@ from fastapi import FastAPI
 from app.core.config import settings
 
 from app.api.events import events_router
+from app.api.stats import stats_router
 
 app = FastAPI(title=settings.app_name)
 app.include_router(events_router)
+app.include_router(stats_router)
 
 @app.get("/health")
 def health():
