@@ -2,8 +2,8 @@ import uvicorn
 from fastapi import FastAPI
 from app.core.config import settings
 
-from app.api.events import events_router
-from app.api.stats import stats_router
+from app.api.routers.events import events_router
+from app.api.routers.stats import stats_router
 
 app = FastAPI(title=settings.app_name)
 app.include_router(events_router)

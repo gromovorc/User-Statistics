@@ -1,7 +1,7 @@
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 
-from app.db.tables import events_table
+from app.db.models.events import events_table
 from app.repositories.events_repo_interface import EventDict, AddResult
 
 

@@ -2,7 +2,7 @@ from datetime import datetime
 
 import sqlalchemy as sa
 
-from app.db.tables import events_table
+from app.db.models.events import events_table
 
 
 class PostgresStatsRepo:

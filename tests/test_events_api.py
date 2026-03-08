@@ -8,7 +8,7 @@ from uuid import uuid4
 from fastapi.testclient import TestClient
 from fastapi.encoders import jsonable_encoder
 
-from app.db.tables import events_table
+from app.db.models.events import events_table
 from app.main import app
 from app.db.database import get_connection
 from app.schemas.event import EventCreate
