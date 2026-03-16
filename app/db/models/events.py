@@ -1,11 +1,11 @@
 from sqlalchemy.dialects.postgresql import UUID, JSONB
-from sqlalchemy import Table, Column, Text, Integer, DateTime, MetaData, BigInteger
+from sqlalchemy import Table, Column, Text, Integer, DateTime, BigInteger, func
 
-_metadata = MetaData()
+from app.db.database import metadata
 
 events_table = Table(
     "events",
-    _metadata,
+    metadata,
     Column('id', BigInteger, primary_key=True),
     Column('event_id', UUID(as_uuid=True), nullable=False),
     Column('event_type', Text, nullable=False),
@@ -13,4 +13,18 @@ events_table = Table(
     Column('event_time', DateTime(timezone=True), nullable=False),
     Column('ingested_at', DateTime(timezone=True), nullable=False),
     Column('properties', JSONB),
+
+    Column(
+        'created_at',
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now()
+    ),
+    Column(
+        'updated_at',
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now()
+    ),
 )

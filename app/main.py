@@ -2,12 +2,14 @@ import uvicorn
 from fastapi import FastAPI
 from app.core.config import settings
 
-from app.api.routers.events import events_router
-from app.api.routers.stats import stats_router
+import app.api.routers.events as events
+import app.api.routers.stats as stats
+import app.api.routers.users as users
 
 app = FastAPI(title=settings.app_name)
-app.include_router(events_router)
-app.include_router(stats_router)
+app.include_router(events.router)
+app.include_router(stats.router)
+app.include_router(users.router)
 
 @app.get("/health")
 def health():

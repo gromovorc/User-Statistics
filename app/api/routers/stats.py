@@ -6,7 +6,7 @@ from app.api.dependencies import get_stats_service
 from app.schemas.stats import StatsResponse
 from app.services.stats_service import StatsService
 
-router = APIRouter()
+router = APIRouter(tags=["stats"])
 
 
 @router.get(

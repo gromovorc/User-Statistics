@@ -6,7 +6,7 @@ from app.api.dependencies import get_events_service
 from app.schemas.event import EventCreate, EventRead
 from app.services.events_service import EventsService
 
-router = APIRouter()
+router = APIRouter(tags=["events"])
 
 
 @router.post(
